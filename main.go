@@ -13,7 +13,7 @@ func main() {
 
 	router.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html; charaset utf-8")
-		components.Home("Lucky me!").Render(r.Context())
+		components.Home("Lucky me!").Render(r.Context(), w)
 	})
 
 	srv := http.Server{
