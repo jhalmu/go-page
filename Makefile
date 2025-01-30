@@ -1,3 +1,17 @@
+APP_NAME ?=go-page
+
+.PHONY: vet
+vet:
+	go vet ./...
+
+.PHONY: staticcheck
+staticcheck:
+	staticcheck ./...
+
+.PHONY: test
+test:
+	go test -race -v -timeout 30s ./...
+
 .PHONY: help
 help: ## print make targets 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -28,20 +42,20 @@ tailwind-watch: ## compile tailwindcss and watch for changes
 tailwind-build: ## one-time compile tailwindcss styles
 	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
 
-.PHONY: build
-build: ## compile tailwindcss and templ files and build the project
-	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
-	templ generate
-	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go
-
-.PHONY: watch
-watch: ## build and watch the project with air
-	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go && air
+.PHONY: templ-watch
+templ-watch:
+	templ generate --watch
 
 .PHONY: templ-generate
 templ-generate:
 	templ generate
 
-.PHONY: templ-watch
-templ-watch:
-	templ generate --watch
+.PHONY: build
+build: ## compile tailwindcss and templ files and build the project
+	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
+	templ generate
+	go build -o ./tmp/$(APP_NAME) ./cmd/main.go
+
+.PHONY: watch
+watch: ## build and watch the project with air
+	go build -o ./tmp/$(APP_NAME) ./cmd/main.go && air
